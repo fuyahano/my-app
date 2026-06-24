@@ -1,0 +1,14 @@
+generator client {
+  provider = "prisma-client-js" // ここを prisma-client-js にするのじゃ
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id   Int    @id @default(autoincrement())
+  name String
+}
+
