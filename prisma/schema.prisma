@@ -1,14 +1,61 @@
-generator client {
-  provider = "prisma-client-js" // ここを prisma-client-js にするのじゃ
-  output   = "../generated/prisma"
-}
-
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ユーザー情報
 model User {
-  id   Int    @id @default(autoincrement())
-  name String
+  id          String   @id @default(uuid())
+  email       String   @unique
+  password    String   // ハッシュ化したパスワード
+  name        String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  products    Product[] @relation("SellerProducts") // 出品した商品
+  purchases   Order[]   @relation("BuyerOrders")    // 購入した注文
 }
 
+// 商品（教科書）情報
+model Product {
+  id          String        @id @default(uuid())
+  title       String        // 教科書名
+  description String        // 商品の説明
+  price       Int           // 価格
+  imageUrl    String        // 商品画像URL
+  status      ProductStatus @default(AVAILABLE) // 販売ステータス
+  condition   Condition     // 本の状態
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  sellerId    String
+  seller      User          @relation("SellerProducts", fields: [sellerId], references: [id])
+  order       Order?
+}
+
+// 注文（取引）情報
+model Order {
+  id          String      @id @default(uuid())
+  createdAt   DateTime    @default(now())
+
+  productId   String      @unique
+  product     Product     @relation(fields: [productId], references: [id])
+  buyerId     String
+  buyer       User        @relation("BuyerOrders", fields: [buyerId], references: [id])
+}
+
+enum ProductStatus {
+  AVAILABLE   // 販売中
+  SOLD_OUT    // 売り切れ
+}
+
+enum Condition {
+  NEW         // 新品
+  GOOD        // 目立った傷なし
+  USED        // 傷や汚れあり
+}
