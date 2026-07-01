@@ -1,17 +1,81 @@
 <!DOCTYPE html>
 <html lang="ja">
-<head><meta charset="UTF-8"><title>ユーザー一覧</title></head>
-<body>
-  <h1>ユーザー一覧</h1>
-  <ul>
-    <% users.forEach(user => { %>
-      <li><%= user.name %></li>
-    <% }) %>
-  </ul>
-  <h2>ユーザー追加</h2>
-  <form action="/users" method="post">
-    <input type="text" name="name" placeholder="ユーザー名を入力" required>
-    <button type="submit">追加</button>
+<head>
+  <meta charset="UTF-8">
+  <title>教科書フリマアプリ</title>
+</head>
+<body style="font-family: sans-serif; padding: 20px;">
+
+  <h1>教科書フリマアプリ（テスト画面）</h1>
+
+  <h2>① ユーザーを登録する</h2>
+  <form action="/users" method="POST" style="margin-bottom: 20px;">
+    <input type="text" name="name" placeholder="ユーザー名（例: 山田太郎）" required />
+    <button type="submit">登録</button>
   </form>
+
+  <hr>
+
+  <h2>② 教科書を出品する</h2>
+  <form action="/products" method="POST" style="margin-bottom: 20px;">
+    <div>
+      <label>教科書名:</label><br>
+      <input type="text" name="title" required style="width: 300px;" />
+    </div>
+    <br>
+    <div>
+      <label>商品説明:</label><br>
+      <textarea name="description" style="width: 300px; height: 60px;"></textarea>
+    </div>
+    <br>
+    <div>
+      <label>価格 (円):</label><br>
+      <input type="number" name="price" required />
+    </div>
+    <br>
+    <div>
+      <label>本の状態:</label><br>
+      <select name="condition">
+        <option value="NEW">新品</option>
+        <option value="GOOD" selected>目立った傷なし</option>
+        <option value="USED">傷や汚れあり</option>
+      </select>
+    </div>
+    <br>
+    <div>
+      <label>出品者を選択（テスト用）:</label><br>
+      <select name="sellerId" required>
+        <% if (users.length === 0) { %>
+          <option value="">最初にユーザーを登録してください</option>
+        <% } else { %>
+          <% users.forEach(user => { %>
+            <option value="<%= user.id %>"><%= user.name %></option>
+          <% }) %>
+        <% } %>
+      </select>
+    </div>
+    <br>
+    <button type="submit" <% if (users.length === 0) { %>disabled<% } %>>出品する</button>
+  </form>
+
+  <hr>
+
+  <h2>③ 出品中の教科書一覧</h2>
+  <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+    <% if (products.length === 0) { %>
+      <p>出品中の教科書はありません。</p>
+    <% } else { %>
+      <% products.forEach(product => { %>
+        <div style="border: 1px solid #ccc; padding: 15px; width: 220px; border-radius: 8px;">
+          <img src="<%= product.imageUrl %>" alt="教科書画像" style="width: 100%; height: auto; border-radius: 4px;" />
+          <h3><%= product.title %></h3>
+          <p>価格: <strong><%= product.price %>円</strong></p>
+          <p>状態: <%= product.condition %></p>
+          <p style="font-size: 12px; color: #666;">出品者: <%= product.seller.name %>さん</p>
+        </div>
+      <% }) %>
+    <% } %>
+  </div>
+
 </body>
 </html>
