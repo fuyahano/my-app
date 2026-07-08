@@ -17,7 +17,7 @@
   <hr>
 
   <h2>② 教科書を出品する</h2>
-  <form action="/products" method="POST" style="margin-bottom: 20px;">
+  <form action="/products" method="POST" enctype="multipart/form-data" style="margin-bottom: 20px;">
     <div>
       <label>教科書名:</label><br>
       <input type="text" name="title" required style="width: 300px;" />
@@ -40,6 +40,11 @@
         <option value="GOOD" selected>目立った傷なし</option>
         <option value="USED">傷や汚れあり</option>
       </select>
+    </div>
+    <br>
+    <div>
+      <label>教科書の写真:</label><br>
+      <input type="file" name="image" accept="image/*" required />
     </div>
     <br>
     <div>
@@ -67,7 +72,7 @@
     <% } else { %>
       <% products.forEach(product => { %>
         <div style="border: 1px solid #ccc; padding: 15px; width: 220px; border-radius: 8px;">
-          <img src="<%= product.imageUrl %>" alt="教科書画像" style="width: 100%; height: auto; border-radius: 4px;" />
+          <img src="<%= product.imageUrl %>" alt="教科書画像" style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px;" />
           <h3><%= product.title %></h3>
           <p>価格: <strong><%= product.price %>円</strong></p>
           <p>状態: <%= product.condition %></p>
