@@ -2,113 +2,195 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>教科書フリマアプリ</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>学内教科書フリマ - Mercari Style</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body style="font-family: sans-serif; padding: 20px;">
+<body class="bg-gray-100 text-gray-800 font-sans min-h-screen">
 
-  <h1>教科書フリマアプリ（テスト画面）</h1>
+  <header class="bg-[#ff0211] text-white shadow-md sticky top-0 z-50">
+    <div class="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+      <h1 class="text-2xl font-bold tracking-wider flex items-center gap-2">
+        <span>📚</span> キャンパスフリマ
+      </h1>
+      <span class="text-xs bg-white text-[#ff0211] font-bold px-2 py-1 rounded-full shadow">
+        テスト環境
+      </span>
+    </div>
+  </header>
 
-  <h2>① ユーザーを登録する</h2>
-  <form action="/users" method="POST" style="margin-bottom: 20px;">
-    <input type="text" name="name" placeholder="ユーザー名（例: 山田太郎）" required />
-    <button type="submit">登録</button>
-  </form>
+  <main class="max-w-5xl mx-auto px-4 py-8 space-y-8">
 
-  <hr>
+    <div class="grid md:grid-cols-2 gap-6">
 
-  <h2>② 教科書を出品する</h2>
-  <form action="/products" method="POST" enctype="multipart/form-data" style="margin-bottom: 20px;">
-    <div>
-      <label>教科書名:</label><br>
-      <input type="text" name="title" required style="width: 300px;" />
-    </div>
-    <br>
-    <div>
-      <label>商品説明:</label><br>
-      <textarea name="description" style="width: 300px; height: 60px;"></textarea>
-    </div>
-    <br>
-    <div>
-      <label>価格 (円):</label><br>
-      <input type="number" name="price" required />
-    </div>
-    <br>
-    <div>
-      <label>本の状態:</label><br>
-      <select name="condition">
-        <option value="NEW">新品</option>
-        <option value="GOOD" selected>目立った傷なし</option>
-        <option value="USED">傷や汚れあり</option>
-      </select>
-    </div>
-    <br>
-    <div>
-      <label>教科書の写真:</label><br>
-      <input type="file" name="image" accept="image/*" required />
-    </div>
-    <br>
-    <div>
-      <label>出品者を選択（テスト用）:</label><br>
-      <select name="sellerId" required>
-        <% if (users.length === 0) { %>
-          <option value="">最初にユーザーを登録してください</option>
-        <% } else { %>
-          <% users.forEach(user => { %>
-            <option value="<%= user.id %>"><%= user.name %></option>
-          <% }) %>
-        <% } %>
-      </select>
-    </div>
-    <br>
-    <button type="submit" <% if (users.length === 0) { %>disabled<% } %>>出品する</button>
-  </form>
+      <section class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <h2 class="text-lg font-bold mb-4 text-gray-700 flex items-center gap-2">
+          <span>👤</span> ① ユーザー登録（テスト用）
+        </h2>
+        <form action="/users" method="POST" class="flex gap-2">
+          <input 
+            type="text" 
+            name="name" 
+            placeholder="ユーザー名 (例: 健太)" 
+            required 
+            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-400 text-sm"
+          />
+          <button 
+            type="submit" 
+            class="bg-gray-800 hover:bg-gray-900 text-white font-bold px-4 py-2 rounded-lg text-sm transition"
+          >
+            登録
+          </button>
+        </form>
+      </section>
 
-  <hr>
-
-  <h2>③ 出品中の教科書一覧</h2>
-  <div style="display: flex; gap: 20px; flex-wrap: wrap;">
-    <% if (products.length === 0) { %>
-      <p>出品中の教科書はありません。</p>
-    <% } else { %>
-      <% products.forEach(product => { %>
-        <div style="border: 1px solid #ccc; padding: 15px; width: 220px; border-radius: 8px; position: relative;">
+      <section class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+        <h2 class="text-lg font-bold mb-4 text-gray-700 flex items-center gap-2">
+          <span>📦</span> ② 教科書を出品する
+        </h2>
+        <form action="/products" method="POST" enctype="multipart/form-data" class="space-y-4">
           
-          <% if (product.isSoldOut) { %>
-            <div style="position: absolute; top: 10px; left: 10px; background: red; color: white; padding: 5px 10px; font-weight: bold; border-radius: 4px;">
-              SOLD OUT
+          <div>
+            <label class="block text-xs font-bold text-gray-600 mb-1">教科書名 *</label>
+            <input type="text" name="title" placeholder="例: 信号処理入門 第2版" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-red-400 focus:outline-none" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="block text-xs font-bold text-gray-600 mb-1">価格 (円) *</label>
+              <input type="number" name="price" placeholder="1200" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-red-400 focus:outline-none" />
             </div>
-          <% } %>
-
-          <img src="<%= product.imageUrl %>" alt="教科書画像" style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px;" />
-          <h3><%= product.title %></h3>
-          <p>価格: <strong><%= product.price %>円</strong></p>
-          <p>状態: <%= product.condition %></p>
-          <p style="font-size: 12px; color: #666;">出品者: <%= product.seller.name %>さん</p>
-
-          <% if (!product.isSoldOut) { %>
-            <form action="/products/<%= product.id %>/buy" method="POST" style="margin-top: 10px;">
-              <select name="buyerId" required style="width: 100%; margin-bottom: 5px;">
-                <option value="">購入者を選択</option>
-                <% users.forEach(user => { %>
-                  <% if (user.id !== product.sellerId) { %>
-                    <option value="<%= user.id %>"><%= user.name %>として購入</option>
-                  <% } %>
-                <% }) %>
+            <div>
+              <label class="block text-xs font-bold text-gray-600 mb-1">本の状態</label>
+              <select name="condition" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-red-400 focus:outline-none">
+                <option value="NEW">新品同様</option>
+                <option value="GOOD" selected>目立った傷なし</option>
+                <option value="USED">傷や書き込みあり</option>
               </select>
-              <button type="submit" style="width: 100%; background: #007bff; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer;">
-                購入する
-              </button>
-            </form>
-          <% } else { %>
-            <button disabled style="width: 100%; background: #ccc; border: none; padding: 8px; border-radius: 4px;">
-              売り切れました
-            </button>
-          <% } %>
+            </div>
+          </div>
 
+          <div>
+            <label class="block text-xs font-bold text-gray-600 mb-1">商品説明</label>
+            <textarea name="description" placeholder="マーカーでの引き線が数ページあります。" rows="2" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-red-400 focus:outline-none"></textarea>
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-gray-600 mb-1">教科書の写真 *</label>
+            <input type="file" name="image" accept="image/*" required class="w-full text-xs text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-red-50 file:text-[#ff0211] hover:file:bg-red-100" />
+          </div>
+
+          <div>
+            <label class="block text-xs font-bold text-gray-600 mb-1">出品者を選択 *</label>
+            <select name="sellerId" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-red-400 focus:outline-none">
+              <% if (users.length === 0) { %>
+                <option value="">最初にユーザーを登録してください</option>
+              <% } else { %>
+                <% users.forEach(user => { %>
+                  <option value="<%= user.id %>"><%= user.name %></option>
+                <% }) %>
+              <% } %>
+            </select>
+          </div>
+
+          <button 
+            type="submit" 
+            <% if (users.length === 0) { %>disabled<% } %>
+            class="w-full bg-[#ff0211] hover:bg-red-700 text-white font-bold py-2.5 rounded-lg transition shadow disabled:bg-gray-300"
+          >
+            出品する
+          </button>
+        </form>
+      </section>
+
+    </div>
+
+    <hr class="border-gray-300 my-8">
+
+    <section>
+      <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+          <span>🛍️</span> 出品中の教科書
+        </h2>
+        <span class="text-sm text-gray-500"><%= products.length %> 件を表示中</span>
+      </div>
+
+      <% if (products.length === 0) { %>
+        <div class="bg-white rounded-xl p-12 text-center text-gray-400 border border-gray-200">
+          <p class="text-lg">現在出品されている教科書はありません。</p>
+          <p class="text-sm mt-1">上のフォームから最初の教科書を出品してみましょう！</p>
         </div>
-      <% }) %>
-    <% } %>
-  </div>
+      <% } else { %>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 md:gap-6">
+          <% products.forEach(product => { %>
+            
+            <div class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition border border-gray-200 flex flex-col justify-between relative group">
+              
+              <% if (product.isSoldOut) { %>
+                <div class="absolute top-0 left-0 bg-[#ff0211] text-white text-xs font-bold px-3 py-1 rounded-br-lg z-10 shadow">
+                  SOLD OUT
+                </div>
+              <% } %>
+
+              <div>
+                <div class="w-full h-40 bg-gray-100 overflow-hidden relative">
+                  <img 
+                    src="<%= product.imageUrl %>" 
+                    alt="<%= product.title %>" 
+                    class="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                  />
+                  <div class="absolute bottom-2 left-2 bg-black/70 text-white font-bold text-sm px-2 py-0.5 rounded">
+                    ¥<%= product.price.toLocaleString() %>
+                  </div>
+                </div>
+
+                <div class="p-3 space-y-1">
+                  <h3 class="font-bold text-gray-800 text-sm line-clamp-2 leading-snug">
+                    <%= product.title %>
+                  </h3>
+                  
+                  <div class="flex items-center justify-between text-[11px] text-gray-500 pt-1">
+                    <span class="bg-gray-100 px-1.5 py-0.5 rounded border">
+                      <%= product.condition === 'NEW' ? '新品同様' : (product.condition === 'GOOD' ? '状態良好' : '傷あり') %>
+                    </span>
+                    <span>出品: <%= product.seller.name %>さん</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="p-3 pt-0 mt-2">
+                <% if (!product.isSoldOut) { %>
+                  <form action="/products/<%= product.id %>/buy" method="POST" class="space-y-1.5">
+                    <select name="buyerId" required class="w-full text-xs p-1 border border-gray-300 rounded bg-gray-50 focus:outline-none">
+                      <option value="">購入者を選択</option>
+                      <% users.forEach(user => { %>
+                        <% if (user.id !== product.sellerId) { %>
+                          <option value="<%= user.id %>"><%= user.name %></option>
+                        <% } %>
+                      <% }) %>
+                    </select>
+                    <button 
+                      type="submit" 
+                      class="w-full bg-[#ff0211] hover:bg-red-700 text-white font-bold py-1.5 text-xs rounded transition shadow-sm"
+                    >
+                      購入する
+                    </button>
+                  </form>
+                <% } else { %>
+                  <button disabled class="w-full bg-gray-200 text-gray-500 font-bold py-1.5 text-xs rounded cursor-not-allowed">
+                    売り切れ
+                  </button>
+                <% } %>
+              </div>
+
+            </div>
+
+          <% }) %>
+        </div>
+      <% } %>
+    </section>
+
+  </main>
 
 </body>
 </html>
