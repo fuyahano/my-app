@@ -22,20 +22,18 @@ model User {
 
 // 商品（教科書）情報
 model Product {
-  id          String        @id @default(uuid())
-  title       String        // 教科書名
-  description String        // 商品の説明
-  price       Int           // 価格
-  imageUrl    String        // 商品画像URL
-  status      ProductStatus @default(AVAILABLE) // 販売ステータス
-  condition   Condition     // 本の状態
-
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  price       Int
+  condition   String
+  imageUrl    String
+  isSoldOut   Boolean  @default(false) // 💡 追加：売り切れフラグ（初期値は false = 出品中）
+  buyerId     String?                  // 💡 追加：買った人のID（最初は空）
   sellerId    String
-  seller      User          @relation("SellerProducts", fields: [sellerId], references: [id])
-  order       Order?
+  seller      User     @relation(fields: [sellerId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 // 注文（取引）情報

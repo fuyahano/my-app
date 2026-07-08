@@ -94,6 +94,29 @@ app.post("/products", upload.single("image"), async (req, res) => {
   }
 });
 
+app.post("/products/:id/buy", async (req, res) => {
+  const productId = req.params.id;
+  const { buyerId } = req.body;
+
+  if (!buyerId) {
+    return res.status(400).send("購入者を選択してください");
+  }
+
+  try {
+    await prisma.product.update({
+      where: { id: productId },
+      data: {
+        isSoldOut: true,
+        buyerId: buyerId,
+      },
+    });
+    res.redirect("/");
+  } catch (error) {
+    console.error("購入エラー:", error);
+    res.status(500).send("購入処理に失敗しました");
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`アプリが起動したぞ！ http://localhost:${PORT}`);
 });

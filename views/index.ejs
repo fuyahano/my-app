@@ -71,12 +71,40 @@
       <p>出品中の教科書はありません。</p>
     <% } else { %>
       <% products.forEach(product => { %>
-        <div style="border: 1px solid #ccc; padding: 15px; width: 220px; border-radius: 8px;">
+        <div style="border: 1px solid #ccc; padding: 15px; width: 220px; border-radius: 8px; position: relative;">
+          
+          <% if (product.isSoldOut) { %>
+            <div style="position: absolute; top: 10px; left: 10px; background: red; color: white; padding: 5px 10px; font-weight: bold; border-radius: 4px;">
+              SOLD OUT
+            </div>
+          <% } %>
+
           <img src="<%= product.imageUrl %>" alt="教科書画像" style="width: 100%; height: 150px; object-fit: cover; border-radius: 4px;" />
           <h3><%= product.title %></h3>
           <p>価格: <strong><%= product.price %>円</strong></p>
           <p>状態: <%= product.condition %></p>
           <p style="font-size: 12px; color: #666;">出品者: <%= product.seller.name %>さん</p>
+
+          <% if (!product.isSoldOut) { %>
+            <form action="/products/<%= product.id %>/buy" method="POST" style="margin-top: 10px;">
+              <select name="buyerId" required style="width: 100%; margin-bottom: 5px;">
+                <option value="">購入者を選択</option>
+                <% users.forEach(user => { %>
+                  <% if (user.id !== product.sellerId) { %>
+                    <option value="<%= user.id %>"><%= user.name %>として購入</option>
+                  <% } %>
+                <% }) %>
+              </select>
+              <button type="submit" style="width: 100%; background: #007bff; color: white; border: none; padding: 8px; border-radius: 4px; cursor: pointer;">
+                購入する
+              </button>
+            </form>
+          <% } else { %>
+            <button disabled style="width: 100%; background: #ccc; border: none; padding: 8px; border-radius: 4px;">
+              売り切れました
+            </button>
+          <% } %>
+
         </div>
       <% }) %>
     <% } %>
