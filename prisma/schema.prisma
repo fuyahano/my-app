@@ -5,7 +5,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 // 1. ユーザーモデル
@@ -14,8 +13,8 @@ model User {
   email     String    @unique
   password  String
   name      String
-  products  Product[] @relation("SellerProducts") // 出品した教科書一覧
-  purchases Product[] @relation("BuyerProducts")  // 購入した教科書一覧
+  products  Product[] @relation("SellerProducts")
+  purchases Product[] @relation("BuyerProducts")
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 }
@@ -28,13 +27,11 @@ model Product {
   price       Int
   condition   String
   imageUrl    String
-  isSoldOut   Boolean  @default(false) // 売り切れフラグ
+  isSoldOut   Boolean  @default(false)
 
-  // 出品者との関係
   sellerId    String
   seller      User     @relation("SellerProducts", fields: [sellerId], references: [id])
 
-  // 購入者との関係（最初は空OK）
   buyerId     String?
   buyer       User?    @relation("BuyerProducts", fields: [buyerId], references: [id])
 
