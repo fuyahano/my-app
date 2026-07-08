@@ -1,26 +1,26 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
 datasource db {
   provider = "postgresql"
-
+  url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
-// ユーザー情報
+// 1. ユーザーモデル
 model User {
-  id          String   @id @default(uuid())
-  email       String   @unique
-  password    String   // ハッシュ化したパスワード
-  name        String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-
-  products    Product[] @relation("SellerProducts") // 出品した商品
-  purchases   Order[]   @relation("BuyerOrders")    // 購入した注文
+  id        String    @id @default(uuid())
+  email     String    @unique
+  password  String
+  name      String
+  products  Product[] @relation("SellerProducts") // 出品した教科書一覧
+  purchases Product[] @relation("BuyerProducts")  // 購入した教科書一覧
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
-// 商品（教科書）情報
+// 2. 教科書モデル
 model Product {
   id          String   @id @default(uuid())
   title       String
@@ -28,32 +28,16 @@ model Product {
   price       Int
   condition   String
   imageUrl    String
-  isSoldOut   Boolean  @default(false) // 💡 追加：売り切れフラグ（初期値は false = 出品中）
-  buyerId     String?                  // 💡 追加：買った人のID（最初は空）
+  isSoldOut   Boolean  @default(false) // 売り切れフラグ
+
+  // 出品者との関係
   sellerId    String
-  seller      User     @relation(fields: [sellerId], references: [id])
+  seller      User     @relation("SellerProducts", fields: [sellerId], references: [id])
+
+  // 購入者との関係（最初は空OK）
+  buyerId     String?
+  buyer       User?    @relation("BuyerProducts", fields: [buyerId], references: [id])
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-}
-
-// 注文（取引）情報
-model Order {
-  id          String      @id @default(uuid())
-  createdAt   DateTime    @default(now())
-
-  productId   String      @unique
-  product     Product     @relation(fields: [productId], references: [id])
-  buyerId     String
-  buyer       User        @relation("BuyerOrders", fields: [buyerId], references: [id])
-}
-
-enum ProductStatus {
-  AVAILABLE   // 販売中
-  SOLD_OUT    // 売り切れ
-}
-
-enum Condition {
-  NEW         // 新品
-  GOOD        // 目立った傷なし
-  USED        // 傷や汚れあり
 }
